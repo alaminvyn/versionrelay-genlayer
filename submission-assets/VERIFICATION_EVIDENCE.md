@@ -5,8 +5,8 @@ This file tracks verified release evidence. Local test outcomes do not constitut
 | Deliverable | Status |
 |---|---|
 | Public GitHub repository and three public evidence SHAs | [Published main](https://github.com/alaminvyn/versionrelay-genlayer) and verified raw fixture bytes |
-| Public Vercel production URL | Pending deployment |
-| Evaluator and registry deployments and one-time binding | Pending wallet confirmation and finality |
+| Public Vercel production URL | [Production dashboard](https://versionrelay-genlayer.vercel.app/) verified in the browser and via unauthenticated HTTP |
+| Evaluator and registry deployments and one-time binding | Registry submission reverted before consensus. Evaluator and binding pending |
 | APPROVED, BLOCKED, and UNRESOLVED receipts | Pending |
 | Successful activation receipt and finalized registry state | Pending |
 
@@ -29,4 +29,4 @@ The RPC matched the documented Phase 2 genesis, chain ID, and AddressManager. Th
 
 Separate unsigned GenVM probes retrieved the official GitHub page and classified the approved local fixture through strict equality. A separate unsigned probe encoded an internal activation message with `onAcceptance: false`. An unsigned end-to-end evaluator simulation fetched all three public commits from Bradbury GenVM. It returned APPROVED with one finalized-only child message, BLOCKED with no child message, and UNRESOLVED with no child message. Live validator consensus and child settlement remain pending.
 
-Unsigned execution is preflight evidence. There are no signed VersionRelay deployment or evaluation receipts yet.
+Unsigned execution is preflight evidence. The signed registry [EVM envelope](https://scan.testnet-chain.genlayer.com/tx/0x1673ab1520a8e4e8f0f9176c5b1f54ca826ea2ea07c06b68ba85d259415d7cf8) has status `0x0` and zero logs. Both Phase 2 RPC gateways reproduce `PhaseTimeoutOutOfBounds(125,30,600)` in unsigned gas estimation. There is no successful VersionRelay deployment or evaluation receipt.
