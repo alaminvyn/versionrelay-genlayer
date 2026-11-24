@@ -10,7 +10,7 @@ API providers change response formats, leaving release owners to decide whether 
 
 ## Reviewer instructions
 
-Use the [Reviewer Guide](../REVIEWER_GUIDE.md) and the [verification evidence](VERIFICATION_EVIDENCE.md). The package requires live links before portal submission.
+Open [Verified migration cases](https://versionrelay-genlayer.vercel.app/#registry). For each case, open its pinned GitHub commit and evaluation receipt. For APPROVED, open the separate registry receipt and check that the active integration release is `adapter-approved`. See the [Reviewer Guide](../REVIEWER_GUIDE.md).
 
 ## Expected verification outcome
 
@@ -18,7 +18,16 @@ The approved adapter reads resources.core and produces a finalized registry acti
 
 ## Website, repository, and onchain links
 
-[Public GitHub repository](https://github.com/alaminvyn/versionrelay-genlayer). [Public Vercel dashboard](https://versionrelay-genlayer.vercel.app/). Successful onchain receipts are pending. See [verification evidence](VERIFICATION_EVIDENCE.md).
+[Public GitHub repository](https://github.com/alaminvyn/versionrelay-genlayer). [Public Vercel dashboard](https://versionrelay-genlayer.vercel.app/). Finalized receipts and contract addresses are listed below. See [verification evidence](VERIFICATION_EVIDENCE.md).
+
+## Onchain evidence
+
+- [APPROVED](https://scan.bradbury.genlayer.com/tx/0xcd8c4cc0fe699904ef2f7b55121f5a4a15f41341b416550f4bb922b9c025cec6)
+- [BLOCKED](https://scan.bradbury.genlayer.com/tx/0x02a3d501ff57d287020e0681b481b5c6eec71deaa1e1fd5432208468ee7b2129)
+- [UNRESOLVED](https://scan.bradbury.genlayer.com/tx/0x6cd31f1e3b0e0d804e08bc56b68be4b582be33d859179ec84ca39bb9914ba8d5)
+- [Finalized activation](https://scan.bradbury.genlayer.com/tx/0x6266a6660d672e1d8f901a2a08000ec6e84cde587185702285df6f3b9069a592)
+- [Activation registry](https://scan.bradbury.genlayer.com/address/0x1fFC6D2C96853afC1B44CF8546E40ab793234E1e)
+- [Migration evaluator](https://scan.bradbury.genlayer.com/address/0x67f9c377A78452A27Fa45dd6625da8B296AaeC8d)
 
 ## Tags
 

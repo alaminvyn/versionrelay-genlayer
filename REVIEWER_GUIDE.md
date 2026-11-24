@@ -1,6 +1,6 @@
 # Reviewer guide
 
-The public deployment and finalized cases are pending. Both contract constructors passed unsigned Phase 2 preflight. [Verification evidence](submission-assets/VERIFICATION_EVIDENCE.md) is the release checklist and will hold the verified links.
+Open the [production dashboard](https://versionrelay-genlayer.vercel.app/#registry). All three cases and the activation are finalized on Bradbury Phase 2. [Full verification evidence](submission-assets/VERIFICATION_EVIDENCE.md).
 
 ## Verify a published case
 

@@ -92,13 +92,13 @@ export async function signer(account: Hex) {
   return createClient({ chain: testnetBradbury, endpoint: RPC, provider: checkedProvider, account })
 }
 export async function fees(account: Hex, registry?: Hex) {
-  const policy = await client.getCurrentFeePolicy()
+  const childQuote = registry ? await client.estimateTransactionFees({ leaderTimeunitsAllocation: 300n, validatorTimeunitsAllocation: 300n }) : undefined
   // The live Bradbury admission policy bounds phase allocations to 30–600.
-  const child = registry && policy.enabled ? [{
+  const child = registry && childQuote?.policy.enabled ? [{
     messageType: MessageType.Internal, onAcceptance: false, recipient: registry,
     callKey: deriveInternalMessageCallKey('activate'),
-    budget: policy.executionBudgetFloor * 10n + policy.genPerTimeUnit * 120000n,
-    feeParams: encodeInternalMessageFeeParams({ leaderTimeunitsAllocation: 300n, validatorTimeunitsAllocation: 300n }),
+    budget: childQuote.feeValue,
+    feeParams: encodeInternalMessageFeeParams(childQuote.distribution),
   }] : undefined
   const quote = await client.estimateTransactionFees({
     leaderTimeunitsAllocation: 300n,

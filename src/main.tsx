@@ -85,7 +85,8 @@ async function getResult(tracked: Tracked, registry: Hex | '', evaluator: Hex | 
   const id = await submissionId(repository, input.commit, input.release)
   result.verdict = await read<Verdict>(evaluator, 'submission', [id])
   if (result.verdict?.verdict !== 'APPROVED' || !registry) return result
-  const children = await client.getTriggeredTransactionIds({ hash: tracked.hash })
+  const lookup = { hash: tracked.hash, fromBlock: BigInt(receipt.readStateBlockRange?.activationBlock || 0) }
+  const children = await client.getTriggeredTransactionIds(lookup)
   if (!children[0]) return result
   result.child = children[0]
   result.childReceipt = await client.getTransaction({ hash: result.child })

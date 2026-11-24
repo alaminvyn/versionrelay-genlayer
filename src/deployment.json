@@ -1,9 +1,33 @@
 {
-  "repository": "",
-  "registry": "",
-  "evaluator": "",
-  "setup": {},
-  "cases": [],
+  "repository": "alaminvyn/versionrelay-genlayer",
+  "registry": "0x1fFC6D2C96853afC1B44CF8546E40ab793234E1e",
+  "evaluator": "0x67f9c377A78452A27Fa45dd6625da8B296AaeC8d",
+  "setup": {
+    "registry": "0x7c0c48be8a6aebb4ae597577c8ad646841713aeb801f08ef661d10910b6c689e",
+    "evaluator": "0xf857ada8f005a82f8342330c9e823fec30c3e8dc6e9691e578cace33d7a430e2",
+    "binding": "0x858b0848533579eff7e810b3c133131f0c89d38b74529a100df61fd807f31695"
+  },
+  "cases": [
+    {
+      "commit": "3c895314cc78764c8b532d73450db66c596cc804",
+      "release": "adapter-approved",
+      "label": "APPROVED",
+      "hash": "0xcd8c4cc0fe699904ef2f7b55121f5a4a15f41341b416550f4bb922b9c025cec6",
+      "child": "0x6266a6660d672e1d8f901a2a08000ec6e84cde587185702285df6f3b9069a592"
+    },
+    {
+      "commit": "2ece8efc57084a34d9ebd0632ecdf3fc78007b45",
+      "release": "adapter-blocked",
+      "label": "BLOCKED",
+      "hash": "0x02a3d501ff57d287020e0681b481b5c6eec71deaa1e1fd5432208468ee7b2129"
+    },
+    {
+      "commit": "680178045d0b7fbb4b2a577dd332ecea6c74e318",
+      "release": "adapter-unresolved",
+      "label": "UNRESOLVED",
+      "hash": "0x6cd31f1e3b0e0d804e08bc56b68be4b582be33d859179ec84ca39bb9914ba8d5"
+    }
+  ],
   "fixtures": [
     {
       "commit": "3c895314cc78764c8b532d73450db66c596cc804",
