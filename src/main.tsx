@@ -34,17 +34,44 @@ function Link({ href, children }: { href: string; children: ReactNode }) {
 function Badge({ value }: { value: string }) {
   return <span className={'badge ' + value.toLowerCase()}>{value.replaceAll('_', ' ')}</span>
 }
+const milestones = [
+  { title: 'Legacy response', key: 'rate', description: 'GitHub REST 2022-11-28 exposes the legacy top-level field.' },
+  { title: 'Consensus review', key: 'Document + commit', description: 'GenLayer validators independently check the official migration rule against a pinned adapter.' },
+  { title: 'Target response', key: 'resources.core', description: 'The 2026-03-10 migration reads the new path. A finalized approval can publish a release to the registry.' },
+]
 function Gate() {
-  return <div className="gate" aria-label="API version 2022-11-28 passes through the evidence gate to version 2026-03-10">
-    <div className="gate-kicker"><span className="line-dot"/> VERSION TRANSITION</div>
-    <div className="gate-art" aria-hidden="true">
-      <div className="version from"><span>FROM</span><strong>2022</strong><small>11 · 28</small></div>
-      <div className="trace"><span/><span/><span/></div>
-      <div className="gate-mark"><img src="/brand/logo.svg" alt=""/></div>
-      <div className="trace after"><span/><span/><span/></div>
-      <div className="version to"><span>TARGET</span><strong>2026</strong><small>03 · 10</small></div>
+  const [stage, setStage] = useState(1)
+  const selected = milestones[stage]
+  return <div className="migration">
+    <div className="blueprint" data-stage={stage}>
+      <div className="diagram-label"><span>GITHUB REST API</span><span>GET /rate_limit</span></div>
+      <svg viewBox="0 0 640 340" className="diagram" aria-hidden="true">
+        <defs><pattern id="blueprint-grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#ddd6fe" strokeOpacity=".14"/></pattern></defs>
+        <path d="M25 24H615V316H25Z" fill="url(#blueprint-grid)" stroke="#ddd6fe" strokeOpacity=".25"/>
+        <path className="guide" d="M25 170H615M320 24V316M68 247 566 93M68 93 566 247"/>
+        <path className="connection" d="M151 204 320 152 489 100M151 230 320 178 489 126"/>
+        <g className="layer layer-old">
+          <path d="m71 181 104-32 79 28-104 33Z"/><path d="m71 181 79 29v50l-79-29Z"/><path d="m150 210 104-33v50l-104 33Z"/>
+        </g>
+        <g className="layer layer-review">
+          <path d="m224 137 105-32 79 28-105 33Z"/><path d="m224 137 79 29v73l-79-29Z"/><path d="m303 166 105-33v73l-105 33Z"/>
+        </g>
+        <g className="layer layer-target">
+          <path d="m378 94 105-32 79 28-105 33Z"/><path d="m378 94 79 29v50l-79-29Z"/><path d="m457 123 105-33v50l-105 33Z"/>
+        </g>
+        <path className="guide" d="M71 242v49h84m407-148v51h41M320 242v49"/>
+        <circle cx="71" cy="291" r="3" fill="#F2AC78"/><circle cx="603" cy="194" r="3" fill="#DDD6FE"/>
+      </svg>
     </div>
-    <div className="gate-caption"><span>GITHUB REST API</span><span>GENLAYER CONSENSUS</span></div>
+    <div className="timeline" role="group" aria-label="Explore the migration timeline">
+      {['2022-11-28', 'Verification', '2026-03-10'].map((label, index) =>
+        <button key={label} type="button" aria-pressed={stage === index} onClick={() => setStage(index)}><span/>{label}</button>
+      )}
+    </div>
+    <div className="timeline-detail" aria-live="polite">
+      <div><strong>{selected.title}</strong><code>{selected.key}</code></div>
+      <p>{selected.description}</p>
+    </div>
   </div>
 }
 async function getResult(tracked: Tracked, registry: Hex | '', evaluator: Hex | '', repository: string): Promise<Result> {
@@ -232,19 +259,19 @@ function App() {
   }
   return <>
     <a className="skip" href="#workspace">Skip to workspace</a>
-    <header><nav className="shell navigation" aria-label="Main navigation">
+    <header className="site-header"><nav className="shell navigation" aria-label="Main navigation">
       <a className="brand" href="#"><img src="/brand/logo.svg" alt=""/><span>VersionRelay</span></a>
       <div className="navlinks"><a href="#workspace">Workspace</a><a href="#registry">Registry</a><a href="#review">Reviewer guide</a></div>
       <button className="button wallet" disabled={busy} onClick={() => account ? setAccount('') : run(async () => setAccount(await connect()))}>{account ? 'Disconnect ' + shorten(account) : 'Connect wallet'}</button>
     </nav></header>
     <main className="shell">
       <section className="hero">
-        <div><p className="eyebrow">API MIGRATION VERIFICATION</p><h1>Change with <br/><em>confidence.</em></h1>
+        <div className="hero-intro"><p className="eyebrow">API MIGRATION VERIFICATION</p><h1>Change with <em>confidence.</em></h1>
           <p className="hero-copy">Verify migration evidence through GenLayer consensus before activating a new API version.</p>
           <div className="actions"><a className="button primary" href="#workspace">Verify a migration</a><a className="button secondary" href="#registry">Explore verified cases</a></div>
         </div><Gate/>
       </section>
-      <div className="networkbar"><span><span className="line-dot"/> Bradbury Phase 2 <b>·</b> Chain 4221</span><span>ACTIVE RELEASE <strong>{active?.release || (registry ? 'Awaiting registry read' : 'Deployment pending')}</strong></span></div>
+      <div className="networkbar"><span><span className="line-dot"/> Bradbury Phase 2 <b>·</b> Chain 4221</span><span>Active release <strong>{active?.release || (registry ? 'Awaiting registry read' : 'Deployment pending')}</strong></span></div>
       {message && <p className="notice" aria-live="polite">{message}</p>}
       {setup && <section className="panel setup"><h2>Owner deployment</h2><p>Deploy the registry, finalize it, deploy the evaluator, finalize it, then bind the evaluator once.</p>
         <label>Approved GitHub repository<input value={repo} onChange={e => setRepo(e.target.value)}/></label>
@@ -271,7 +298,7 @@ function App() {
             <small>{!bound ? 'Writes open after the evaluator is bound on Bradbury.' : isOwner ? 'Submitting opens a wallet confirmation for a Bradbury transaction.' : 'Only the authorized wallet can submit. Anyone can inspect results.'}</small>
           </form>
           <aside className="panel evidence">
-            <p className="eyebrow">EVIDENCE INSPECTOR</p><h3>GitHub rate limit response</h3>
+            <p className="eyebrow">EVIDENCE INSPECTOR</p><h3>One field changes the release.</h3>
             <p>Version <code>2026-03-10</code> removes the top-level <code>rate</code> property from <code>GET /rate_limit</code>.</p>
             <div className="rule"><div><span>Removed</span><code>rate</code></div><div><span>Required</span><code>resources.core</code></div></div>
             <Link href={source}>Official migration requirement</Link>

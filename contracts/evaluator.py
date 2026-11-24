@@ -1,5 +1,8 @@
-# { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
-from genlayer import *
+# v0.3.0
+# { "Depends": "py-genlayer:babwp9t37jw9g4j2bccgn14g6x7x9s1f7dsmh7emvz735pz4zxa0" }
+
+import genlayer as gl
+from genlayer.types import Address, u64
 import hashlib
 import html
 import json
@@ -54,13 +57,13 @@ def classify(document, evidence):
         return ("BLOCKED", "USES_REMOVED_RATE", fingerprint, evidence_hash)
     return ("UNRESOLVED", "RESPONSE_PATH_UNCONFIRMED", fingerprint, evidence_hash)
 
-class MigrationEvaluator(gl.Contract):
+class MigrationEvaluator(gl.contract.Contract):
     owner: Address
     registry: Address
     repository: str
     sequence: u64
-    records: TreeMap[str, str]
-    index: TreeMap[u64, str]
+    records: gl.storage.TreeMap[str, str]
+    index: gl.storage.TreeMap[u64, str]
 
     def __init__(self, registry: str, repository: str):
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}/versionrelay-genlayer", repository):
@@ -86,7 +89,7 @@ class MigrationEvaluator(gl.Contract):
         def verify():
             documentation = gl.nondet.web.get(SOURCE)
             evidence = gl.nondet.web.get(url)
-            if documentation.status_code != 200 or evidence.status_code != 200:
+            if documentation.status != 200 or evidence.status != 200:
                 raise ValueError("Evidence sources unavailable")
             fields = classify(documentation.body, evidence.body)
             return json.dumps(fields, separators=(",", ":"))
@@ -102,7 +105,7 @@ class MigrationEvaluator(gl.Contract):
             "sourceDigest": source_digest, "evidenceDigest": evidence_digest, "evidence": url,
         }, sort_keys=True)
         if verdict == "APPROVED":
-            gl.get_contract_at(self.registry).emit(on="finalized").activate(submission, release, sequence)
+            gl.contract.get_at(self.registry).emit(on="finalized").activate(submission, release, sequence)
 
     @gl.public.view
     def configuration(self) -> str:

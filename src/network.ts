@@ -6,7 +6,7 @@ export type TxHash = Parameters<ReturnType<typeof createClient>["getTransaction"
 export type Hex = `0x${string}`
 export type Provider = NonNullable<NonNullable<Parameters<typeof createClient>[0]>['provider']>
 export const RPC = 'https://rpc-bradbury.genlayer.com'
-export const explorer = 'https://scan.testnet-chain.genlayer.com'
+export const explorer = 'https://scan.bradbury.genlayer.com'
 export const source = 'https://docs.github.com/en/rest/about-the-rest-api/breaking-changes?apiVersion=2026-03-10'
 export const manager = '0x3F71AE080BD6270A91dBcc7960d88797828538E0'
 const genesis = '0x17d89764d4f4f963158fc4c5e8f2cb670c2837740b35f37081c12860c3df97e4'
@@ -59,7 +59,7 @@ export async function switchNetwork() {
     await provider.request({ method: 'wallet_switchEthereumChain', params })
   } catch (error) {
     if ((error as { code?: number }).code !== 4902) throw error
-    await provider.request({ method: 'wallet_addEthereumChain', params: [{ ...params[0], chainName: 'GenLayer Bradbury', nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, rpcUrls: [RPC], blockExplorerUrls: [explorer] }] })
+    await provider.request({ method: 'wallet_addEthereumChain', params: [{ ...params[0], chainName: 'GenLayer Bradbury', nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 }, rpcUrls: [RPC], blockExplorerUrls: ['https://scan.testnet-chain.genlayer.com'] }] })
     await provider.request({ method: 'wallet_switchEthereumChain', params })
   }
 }

@@ -1,17 +1,20 @@
-# { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
-from genlayer import *
+# v0.3.0
+# { "Depends": "py-genlayer:babwp9t37jw9g4j2bccgn14g6x7x9s1f7dsmh7emvz735pz4zxa0" }
+
+import genlayer as gl
+from genlayer.types import Address, u64
 import json
 import re
 
 ZERO = "0x0000000000000000000000000000000000000000"
 
-class ActivationRegistry(gl.Contract):
+class ActivationRegistry(gl.contract.Contract):
     owner: Address
     evaluator: Address
     sequence: u64
     active_id: str
     active_release: str
-    activations: TreeMap[str, str]
+    activations: gl.storage.TreeMap[str, str]
 
     def __init__(self):
         self.owner = gl.message.sender_address
@@ -27,7 +30,7 @@ class ActivationRegistry(gl.Contract):
         evaluator = Address(evaluator_address)
         if evaluator == Address(ZERO) or evaluator == self.owner:
             raise ValueError("Invalid evaluator")
-        configuration = json.loads(gl.get_contract_at(evaluator).view().configuration())
+        configuration = json.loads(gl.contract.get_at(evaluator).view().configuration())
         if Address(configuration["registry"]) != gl.message.contract_address or Address(configuration["owner"]) != self.owner:
             raise ValueError("Evaluator configuration does not match")
         self.evaluator = evaluator

@@ -13,14 +13,15 @@ class Address(str):
     def as_hex(self):
         return str(self)
 
-sdk.Address = Address
-sdk.u64 = int
-sdk.TreeMap = dict
-sdk.gl = SimpleNamespace(
-    Contract=object, public=SimpleNamespace(write=lambda f: f, view=lambda f: f),
-    message=SimpleNamespace(sender_address=Address("owner"), contract_address="registry"),
-)
+sdk_types = ModuleType("genlayer.types")
+sdk_types.Address = Address
+sdk_types.u64 = int
+sdk.contract = SimpleNamespace(Contract=object)
+sdk.storage = SimpleNamespace(TreeMap=dict)
+sdk.public = SimpleNamespace(write=lambda f: f, view=lambda f: f)
+sdk.message = SimpleNamespace(sender_address=Address("owner"), contract_address="registry")
 sys.modules["genlayer"] = sdk
+sys.modules["genlayer.types"] = sdk_types
 evaluator = importlib.import_module("contracts.evaluator")
 registry = importlib.import_module("contracts.registry")
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,18 +58,18 @@ class EvaluationTests(unittest.TestCase):
 
     def test_dispatches_only_approved_and_rejects_duplicates(self):
         obj = evaluator.MigrationEvaluator("registry", "owner/versionrelay-genlayer")
-        sdk.gl.message.sender_address = Address("owner")
+        sdk.message.sender_address = Address("owner")
         obj.records = {}
         obj.index = {}
         sent = []
-        sdk.gl.eq_principle = SimpleNamespace(strict_eq=lambda fn: fn())
+        sdk.eq_principle = SimpleNamespace(strict_eq=lambda fn: fn())
         def send(**options):
             self.assertEqual(options, {"on": "finalized"})
             return SimpleNamespace(activate=lambda *args: sent.append(args))
-        sdk.gl.get_contract_at = lambda value: SimpleNamespace(emit=send)
+        sdk.contract.get_at = lambda value: SimpleNamespace(emit=send)
         for index, name in enumerate(("approved", "blocked", "unresolved")):
             sha = str(index) * 40
-            sdk.gl.nondet = SimpleNamespace(web=SimpleNamespace(get=lambda url: SimpleNamespace(status_code=200, body=DOC if url == evaluator.SOURCE else fixture(name))))
+            sdk.nondet = SimpleNamespace(web=SimpleNamespace(get=lambda url: SimpleNamespace(status=200, body=DOC if url == evaluator.SOURCE else fixture(name))))
             obj.evaluate(sha, "release-" + str(index))
         self.assertEqual(len(sent), 1)
         self.assertEqual(sent[0][1:], ("release-0", 1))
@@ -82,27 +83,27 @@ class EvaluationTests(unittest.TestCase):
 
 class RegistryTests(unittest.TestCase):
     def setUp(self):
-        sdk.gl.message.sender_address = Address("owner")
+        sdk.message.sender_address = Address("owner")
         self.registry = registry.ActivationRegistry()
         self.registry.activations = {}
-        sdk.gl.get_contract_at = lambda _: SimpleNamespace(view=lambda: SimpleNamespace(configuration=lambda: '{"owner":"owner","registry":"registry"}'))
+        sdk.contract.get_at = lambda _: SimpleNamespace(view=lambda: SimpleNamespace(configuration=lambda: '{"owner":"owner","registry":"registry"}'))
 
     def test_cannot_activate_directly(self):
         with self.assertRaisesRegex(ValueError, "Only the evaluator"):
             self.registry.activate("a" * 64, "release-1", 1)
 
     def test_binding_is_authorized_and_one_time(self):
-        sdk.gl.message.sender_address = "visitor"
+        sdk.message.sender_address = "visitor"
         with self.assertRaises(ValueError):
             self.registry.bind_evaluator("evaluator")
-        sdk.gl.message.sender_address = Address("owner")
+        sdk.message.sender_address = Address("owner")
         self.registry.bind_evaluator("evaluator")
         with self.assertRaises(ValueError):
             self.registry.bind_evaluator("another")
 
     def test_replay_and_stale_updates(self):
         self.registry.bind_evaluator("evaluator")
-        sdk.gl.message.sender_address = "evaluator"
+        sdk.message.sender_address = "evaluator"
         self.registry.activate("a" * 64, "release-2", 2)
         for args in (("a" * 64, "release-3", 3), ("b" * 64, "release-1", 1)):
             with self.assertRaisesRegex(ValueError, "Replay or stale"):

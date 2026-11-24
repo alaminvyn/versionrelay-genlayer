@@ -1,6 +1,6 @@
 # Reviewer guide
 
-The public deployment and finalized cases are pending. [Verification evidence](submission-assets/VERIFICATION_EVIDENCE.md) is the release checklist and will hold the verified links.
+The public deployment and finalized cases are pending. Both contract constructors passed unsigned Phase 2 preflight. [Verification evidence](submission-assets/VERIFICATION_EVIDENCE.md) is the release checklist and will hold the verified links.
 
 ## Verify a published case
 

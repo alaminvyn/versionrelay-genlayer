@@ -25,4 +25,8 @@ These SHAs exist in the local Git repository. Their GitHub availability has not 
 
 ## Bradbury preflight
 
-The RPC returned the expected Phase 2 genesis and live fee policy, and its CORS preflight succeeded. Unsigned constructor simulations for both contracts and a minimal control failed in GenVM with `invalid_contract runner malformed`. The schema probe returned HTTP 522. There are no signed deployment or evaluation receipts.
+The RPC matched the documented Phase 2 genesis, chain ID, and AddressManager. The legacy runner and a minimal control using that runner failed with `invalid_contract runner malformed`. The exact v0.3 pin obtained from [the finalized reference contract](https://scan.bradbury.genlayer.com/address/0x99C23e1794ed35b429161fBEB00967D0c81DC491) passed a control. With the same pin and v0.3 API corrections, both VersionRelay constructors passed unsigned GenVM execution. The pinned GenLayerJS SDK returned a constructor quote of 100000000000112941 wei. Quotes can change. Reproduce with `node scripts/check-bradbury.mjs`.
+
+Separate unsigned GenVM probes retrieved the official GitHub page and classified the approved local fixture through strict equality. A separate unsigned probe encoded an internal activation message with `onAcceptance: false`. Public commit retrieval, live validator consensus, and child settlement remain pending.
+
+Unsigned execution is preflight evidence. There are no signed VersionRelay deployment or evaluation receipts yet.

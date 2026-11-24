@@ -30,4 +30,4 @@ React, TypeScript, Vite, GenLayerJS, Python Intelligent Contracts, Bradbury Phas
 
 ## Logo
 
-[project-logo.png](project-logo.png), 1024 × 1024 PNG with transparency.
+[project-logo.png](project-logo.png), 1024 × 1024 transparent PNG, 59,084 bytes.
