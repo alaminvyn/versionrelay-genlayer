@@ -1,0 +1,24 @@
+{
+  "repository": "",
+  "registry": "",
+  "evaluator": "",
+  "setup": {},
+  "cases": [],
+  "fixtures": [
+    {
+      "commit": "3c895314cc78764c8b532d73450db66c596cc804",
+      "release": "adapter-approved",
+      "label": "APPROVED"
+    },
+    {
+      "commit": "2ece8efc57084a34d9ebd0632ecdf3fc78007b45",
+      "release": "adapter-blocked",
+      "label": "BLOCKED"
+    },
+    {
+      "commit": "680178045d0b7fbb4b2a577dd332ecea6c74e318",
+      "release": "adapter-unresolved",
+      "label": "UNRESOLVED"
+    }
+  ]
+}
