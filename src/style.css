@@ -106,7 +106,7 @@ input { min-width: 0; width: 100%; padding: 10px 11px; min-height: 45px; border:
 input[aria-invalid="true"] { border-color: #a12648; }
 .error { color: #a12648; }
 .panel .actions + small { display: block; margin-top: 11px; color: var(--ink); }
-.panel a, .review a { display: inline-block; margin: 5px 13px 5px 0; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; color: #4e399c; }
+.panel a { display: inline-block; margin: 5px 13px 5px 0; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; color: #4e399c; }
 .external { margin-left: 5px; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 2px 0 15px; }
 .chips button { min-height: 36px; padding: 6px 10px; background: #eee9fc; border: 1px solid #c3b7e4; color: #45367a; font: 600 .72rem var(--mono); border-radius: 3px; }
@@ -126,11 +126,7 @@ details { margin: 12px 0; }
 summary { cursor: pointer; }
 dd { margin-left: 0; font: .78rem var(--mono); overflow-wrap: anywhere; }
 dt { margin-top: 8px; }
-.review { display: grid; grid-template-columns: 1fr 1.12fr; gap: 24px; margin: 68px 0 36px; padding: clamp(25px, 5vw, 58px); background: var(--midnight); color: var(--porcelain); border-top: 3px solid var(--iris); }
-.review .eyebrow, .review a { color: var(--peach); }
-.review ol { margin: 0; padding-left: 21px; line-height: 1.8; }
-.review p:not(.eyebrow) { color: var(--lavender); }
-footer { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 0 28px; color: var(--ink); font-size: .87rem; }
+footer { margin-top: 36px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 0 28px; color: var(--ink); font-size: .87rem; }
 
 @media (max-width: 1000px) {
   .shell { width: calc(100% - 56px); }
@@ -146,11 +142,10 @@ footer { display: flex; justify-content: space-between; flex-wrap: wrap; align-i
   .hero h1 { font-size: clamp(2.8rem, 10vw, 5rem); }
   .migration { border-left: 0; padding: 0 0 20px; }
   .timeline-detail { min-height: 90px; }
-  .workspace, .review { grid-template-columns: 1fr; }
+  .workspace { grid-template-columns: 1fr; }
   .workspace form, .workspace .evidence { grid-column: 1; grid-row: auto; }
   .workspace .evidence { order: -1; }
   .section { padding-top: 40px; }
-  .review { margin-top: 45px; }
 }
 @media (max-width: 420px) {
   .timeline button { padding-left: 6px; font-size: .67rem; }

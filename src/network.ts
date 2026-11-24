@@ -30,7 +30,14 @@ export async function rpc<T>(method: string, params: unknown[]) {
   })
   if (!response.ok) throw new Error(`Bradbury RPC returned HTTP ${response.status}.`)
   const data = await response.json()
-  if (data.error) throw new Error(data.error.message)
+  if (data.error) {
+    const revert = data.error.data
+    if (typeof revert === 'string' && /^0xdb0c8dfe[0-9a-f]{192}$/i.test(revert)) {
+      const [value, min, max] = revert.slice(10).match(/.{64}/g)!.map(word => BigInt('0x' + word))
+      throw new Error(`Bradbury rejected phase allocation ${value}. The allowed range is ${min}–${max}.`)
+    }
+    throw new Error(data.error.message)
+  }
   return data.result as T
 }
 async function verifyNetwork() {
@@ -70,20 +77,32 @@ export async function signer(account: Hex) {
   const block = await provider.request({ method: 'eth_getBlockByNumber', params: ['0x0', false] }) as { hash: string } | null
   if (block?.hash !== genesis) throw new Error('Your wallet RPC points to a different Bradbury deployment.')
   await verifyNetwork()
-  return createClient({ chain: testnetBradbury, endpoint: RPC, provider, account })
+  const checkedProvider: Provider = {
+    request: async (request: Parameters<Provider['request']>[0]) => {
+      if (request.method === 'eth_sendTransaction') {
+        const envelope = Array.isArray(request.params) ? request.params[0] : undefined
+        if (!envelope || typeof envelope !== 'object') throw new Error('Missing transaction envelope.')
+        const { from, to, data, value, gas } = envelope as Record<string, string | undefined>
+        const required = await rpc<string>('eth_estimateGas', [{ from, to, data, value }])
+        if (gas && BigInt(gas) < BigInt(required)) throw new Error('The proposed gas limit is below the network estimate.')
+      }
+      return provider.request(request)
+    },
+  }
+  return createClient({ chain: testnetBradbury, endpoint: RPC, provider: checkedProvider, account })
 }
 export async function fees(account: Hex, registry?: Hex) {
   const policy = await client.getCurrentFeePolicy()
-  // Initial smoke-test caps. Calibrate against observed GenVM usage before publishing.
+  // The live Bradbury admission policy bounds phase allocations to 30–600.
   const child = registry && policy.enabled ? [{
     messageType: MessageType.Internal, onAcceptance: false, recipient: registry,
     callKey: deriveInternalMessageCallKey('activate'),
     budget: policy.executionBudgetFloor * 10n + policy.genPerTimeUnit * 120000n,
-    feeParams: encodeInternalMessageFeeParams({ leaderTimeunitsAllocation: 1500n, validatorTimeunitsAllocation: 1500n }),
+    feeParams: encodeInternalMessageFeeParams({ leaderTimeunitsAllocation: 300n, validatorTimeunitsAllocation: 300n }),
   }] : undefined
   const quote = await client.estimateTransactionFees({
-    leaderTimeunitsAllocation: registry ? 16000n : 2000n,
-    validatorTimeunitsAllocation: registry ? 16000n : 2000n,
+    leaderTimeunitsAllocation: 300n,
+    validatorTimeunitsAllocation: 300n,
     messageAllocations: child,
   })
   const balance = await rpc<string>('eth_getBalance', [account, 'latest'])

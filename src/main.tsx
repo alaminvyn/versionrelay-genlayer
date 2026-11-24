@@ -105,7 +105,7 @@ function ResultCard({ result, tracked, finalize }: { result: Result | null; trac
         <div className="row"><span>Migration verdict</span><Badge value={result.verdict.verdict}/></div>
         <p>{reasons[result.verdict.reason] || result.verdict.reason}</p>
         <details><summary>Evidence fingerprints</summary><dl>
-          <dt>Submission ID</dt><dd>{result.verdict.id}</dd><dt>Normalized source SHA-256</dt><dd>{result.verdict.sourceDigest || 'Unavailable'}</dd>
+          <dt>Evaluation ID</dt><dd>{result.verdict.id}</dd><dt>Normalized source SHA-256</dt><dd>{result.verdict.sourceDigest || 'Unavailable'}</dd>
           <dt>Evidence SHA-256</dt><dd>{result.verdict.evidenceDigest}</dd>
         </dl></details>
         <div className="row"><span>Activation</span><strong>{activationLabel(result.verdict.verdict, !!result.activation, result.childReceipt?.statusName === 'FINALIZED')}</strong></div>
@@ -261,14 +261,14 @@ function App() {
     <a className="skip" href="#workspace">Skip to workspace</a>
     <header className="site-header"><nav className="shell navigation" aria-label="Main navigation">
       <a className="brand" href="#"><img src="/brand/logo.svg" alt=""/><span>VersionRelay</span></a>
-      <div className="navlinks"><a href="#workspace">Workspace</a><a href="#registry">Registry</a><a href="#review">Reviewer guide</a></div>
+      <div className="navlinks"><a href="#workspace">Workspace</a><a href="#registry">Registry</a></div>
       <button className="button wallet" disabled={busy} onClick={() => account ? setAccount('') : run(async () => setAccount(await connect()))}>{account ? 'Disconnect ' + shorten(account) : 'Connect wallet'}</button>
     </nav></header>
     <main className="shell">
       <section className="hero">
         <div className="hero-intro"><p className="eyebrow">API MIGRATION VERIFICATION</p><h1>Change with <em>confidence.</em></h1>
           <p className="hero-copy">Verify migration evidence through GenLayer consensus before activating a new API version.</p>
-          <div className="actions"><a className="button primary" href="#workspace">Verify a migration</a><a className="button secondary" href="#registry">Explore verified cases</a></div>
+          <div className="actions"><a className="button primary" href="#workspace">Verify a migration</a><a className="button secondary" href="#registry">Explore migration cases</a></div>
         </div><Gate/>
       </section>
       <div className="networkbar"><span><span className="line-dot"/> Bradbury Phase 2 <b>·</b> Chain 4221</span><span>Active release <strong>{active?.release || (registry ? 'Awaiting registry read' : 'Deployment pending')}</strong></span></div>
@@ -285,7 +285,7 @@ function App() {
         <div className="section-heading"><div><p className="eyebrow">WORKSPACE</p><h2>Verify a migration</h2></div><span className="technical">GITHUB REST / 2026-03-10</span></div>
         <div className="workspace">
           <form className="panel" onSubmit={submit}>
-            <h3>Submit implementation evidence</h3>
+            <h3>Implementation evidence</h3>
             <p>Choose an immutable commit from the approved repository and name the integration release.</p>
             <label>Evidence repository<input value={repository || 'Awaiting deployment'} readOnly/></label>
             <label>Git commit SHA<input autoComplete="off" spellCheck={false} value={commit} onChange={e => setCommit(e.target.value.trim())} placeholder="40 lowercase hexadecimal characters" aria-invalid={!!commit && !sha(commit)}/></label>
@@ -293,17 +293,17 @@ function App() {
             <label>Target integration release<input value={release} onChange={e => setRelease(e.target.value)} placeholder="e.g. adapter-2.0" aria-invalid={!!release && !releaseName(release)}/></label>
             {release && !releaseName(release) && <small className="error">Use 1–32 letters, digits, dots, underscores, or hyphens. Start with a letter or digit.</small>}
             {!!deployment.fixtures.length && <div className="chips">{deployment.fixtures.map(item => <button type="button" key={item.commit} onClick={() => pick(item)}>{item.label}</button>)}</div>}
-            <div className="actions"><button className="button primary" disabled={busy || !sha(commit) || !releaseName(release) || !bound || !isOwner}>Submit verification</button>
+            <div className="actions"><button className="button primary" disabled={busy || !sha(commit) || !releaseName(release) || !bound || !isOwner}>Verify evidence</button>
             {account && <button type="button" className="button secondary" disabled={busy} onClick={() => run(switchNetwork)}>Switch to Bradbury</button>}</div>
-            <small>{!bound ? 'Writes open after the evaluator is bound on Bradbury.' : isOwner ? 'Submitting opens a wallet confirmation for a Bradbury transaction.' : 'Only the authorized wallet can submit. Anyone can inspect results.'}</small>
+            <small>{!bound ? 'Verification is unavailable until the evaluator is connected to the registry.' : isOwner ? 'Verification opens a wallet confirmation for a Bradbury transaction.' : 'Only the authorized wallet can run evaluations. Results are public.'}</small>
           </form>
           <aside className="panel evidence">
             <p className="eyebrow">EVIDENCE INSPECTOR</p><h3>One field changes the release.</h3>
             <p>Version <code>2026-03-10</code> removes the top-level <code>rate</code> property from <code>GET /rate_limit</code>.</p>
             <div className="rule"><div><span>Removed</span><code>rate</code></div><div><span>Required</span><code>resources.core</code></div></div>
             <Link href={source}>Official migration requirement</Link>
-            {repositoryName(repository) && sha(commit) && <Link href={commitUrl(repository, commit)}>Submitted GitHub commit</Link>}
-            <p className="muted">Validators retrieve the official rule and the adapter at the submitted commit. The contract records their agreed verdict and evidence fingerprints.</p>
+            {repositoryName(repository) && sha(commit) && <Link href={commitUrl(repository, commit)}>Pinned GitHub commit</Link>}
+            <p className="muted">Validators retrieve the official rule and the adapter at the pinned commit. The contract records their agreed verdict and evidence fingerprints.</p>
           </aside>
         </div>
         <div className="panel lifecycle"><div><h3>Transaction activity</h3><p>Inspect a GenLayer receipt after refresh or from another browser.</p></div>
@@ -316,14 +316,14 @@ function App() {
         </div>
       </section>
       <section id="registry" className="section">
-        <div className="section-heading"><div><p className="eyebrow">ONCHAIN REGISTRY</p><h2>Verified cases</h2></div><span className="technical">PUBLIC READ ACCESS</span></div>
+        <div className="section-heading"><div><p className="eyebrow">ONCHAIN REGISTRY</p><h2>Verified migration cases</h2></div><span className="technical">PUBLIC READ ACCESS</span></div>
         <div className="panel">
           <div className="row"><strong>Active integration release</strong><span>{active?.release || (bound ? 'No release activated' : 'Registry unavailable')}</span></div>
-          {active?.id && <div className="row"><span>Active submission</span><code title={active.id}>{shorten(active.id)}</code></div>}
+          {active?.id && <div className="row"><span>Active evaluation</span><code title={active.id}>{shorten(active.id)}</code></div>}
           {registry && <Link href={explorer + '/address/' + registry}>Activation registry</Link>}
           {evaluator && <Link href={explorer + '/address/' + evaluator}>Migration evaluator</Link>}
           {readError && <p role="status">{readError} <button onClick={() => setRetry(retry + 1)}>Retry</button></p>}
-          {!deployment.cases.length && <p className="muted">There are no published finalized reviewer cases yet.</p>}
+          {!deployment.cases.length && !recent.length && <p className="muted">No finalized migration cases yet.</p>}
           {recent.filter(item => !deployment.cases.some(entry => entry.commit === item.commit && entry.release === item.release)).map(item =>
             <article className="case" key={item.id}>
               <div className="row"><h3>{item.release}</h3><Badge value={item.verdict}/></div>
@@ -335,13 +335,8 @@ function App() {
             {repositoryName(repository) && <Link href={commitUrl(repository, item.commit)}>Pinned evidence commit</Link>}<ResultCard tracked={item} result={cases[item.hash] || null}/></article>)}
         </div>
       </section>
-      <section id="review" className="review"><div><p className="eyebrow">REVIEWER GUIDE</p><h2>Follow the evidence.</h2></div><div>
-        <ol><li>Open a case and compare its pinned adapter with GitHub’s official rule.</li><li>Check the GenLayer receipt for finality and successful execution.</li><li>For approval, verify the separate activation transaction and registry state.</li></ol>
-        <p>VersionRelay evaluates the supported adapter and records release activation in its own registry. The record does not attest to CI execution, production deployment, or software safety.</p>
-        {repositoryName(repository) && <Link href={'https://github.com/' + repository}>Source code and documentation</Link>}
-      </div></section>
     </main>
-    <footer className="shell"><span className="brand"><img src="/brand/logo.svg" alt=""/>VersionRelay</span><span>Built for GenLayer Bradbury Phase 2</span></footer>
+    <footer className="shell"><span className="brand"><img src="/brand/logo.svg" alt=""/>VersionRelay</span></footer>
   </>
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)
