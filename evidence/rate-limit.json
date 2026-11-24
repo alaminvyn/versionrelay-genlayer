@@ -7,7 +7,6 @@
     }
   },
   "responsePath": [
-    "resources",
-    "core"
+    "rate"
   ]
 }
