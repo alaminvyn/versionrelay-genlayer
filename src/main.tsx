@@ -19,7 +19,7 @@ const reasons: Record<string, string> = {
 const shorten = (value: string) => value.length > 20 ? value.slice(0, 10) + '…' + value.slice(-7) : value
 const txUrl = (value: string) => explorer + '/tx/' + value
 const commitUrl = (repo: string, commit: string) => 'https://github.com/' + repo + '/commit/' + commit
-type Tracked = { hash: TxHash; commit?: string; release?: string }
+type Tracked = { hash: TxHash; child?: TxHash; commit?: string; release?: string }
 type Result = { receipt: Tx; action?: string; verdict?: Verdict | null; child?: TxHash; childReceipt?: Tx; childAction?: string; activation?: Active | null }
 const trackKey = 'versionrelay.transaction'
 function saved(): Tracked | null {
@@ -86,13 +86,19 @@ async function getResult(tracked: Tracked, registry: Hex | '', evaluator: Hex | 
   result.verdict = await read<Verdict>(evaluator, 'submission', [id])
   if (result.verdict?.verdict !== 'APPROVED' || !registry) return result
   const lookup = { hash: tracked.hash, fromBlock: BigInt(receipt.readStateBlockRange?.activationBlock || 0) }
-  const children = await client.getTriggeredTransactionIds(lookup)
-  if (!children[0]) return result
-  result.child = children[0]
-  result.childReceipt = await client.getTransaction({ hash: result.child })
-  const childProtocol = await client.advanced.getTransactionLifecycle({ hash: result.child }).catch(() => null)
+  const child = tracked.child || (await client.getTriggeredTransactionIds(lookup))[0]
+  if (!child) return result
+  const childReceipt = await client.getTransaction({ hash: child })
+  const childData = childReceipt.txDataDecoded
+  const call = childData && 'callData' in childData ? childData.callData : null
+  if (childReceipt.recipient?.toLowerCase() !== registry.toLowerCase() ||
+      childReceipt.sender?.toLowerCase() !== evaluator.toLowerCase() ||
+      !(call instanceof Map) || call.get('') !== 'activate' || call.get('args')?.[0] !== id) return result
+  result.child = child
+  result.childReceipt = childReceipt
+  const childProtocol = await client.advanced.getTransactionLifecycle({ hash: child }).catch(() => null)
   result.childAction = childProtocol?.resolutionAction
-  if (finalizedSuccess(result.childReceipt)) result.activation = await read<Active>(registry, 'activation', [id])
+  if (finalizedSuccess(childReceipt)) result.activation = await read<Active>(registry, 'activation', [id])
   return result
 }
 function ResultCard({ result, tracked, finalize }: { result: Result | null; tracked: Tracked; finalize?: (h: TxHash) => void }) {
