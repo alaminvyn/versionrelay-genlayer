@@ -1,10 +1,10 @@
 # Resume VersionRelay
 
-The React app, contracts, fixtures, logo, tests, and submission drafts are in the local repository. There is no public remote, production URL, deployed address, or transaction hash.
+The React app, contracts, fixtures, logo, tests, and submission drafts are committed. The [public repository](https://github.com/alaminvyn/versionrelay-genlayer) has the redesigned main branch. GitHub raw bytes for all three pinned fixture SHAs match the local Git objects. There is no production URL, VersionRelay contract address, or signed transaction hash yet.
 
-1. Bradbury constructor preflight now passes after switching to the v0.3 Python runner verified against a finalized Phase 2 reference contract. Run `node scripts/check-bradbury.mjs` to reproduce before signing. Verify public commit retrieval, registry child budget, and finalized-message settlement during live operation.
-2. Obtain explicit approval for public GitHub publication, free Vercel deployment, and preparation of wallet transactions. GitHub's connected login is `alaminvyn`. The owner handles wallet connection, funding, confirmations, account authorization, and portal submission.
-3. Publish local main and fixture tags. Verify all three raw GitHub commit URLs against the SHAs in `submission-assets/VERIFICATION_EVIDENCE.md`.
+1. Bradbury constructor preflight passes for the pinned v0.3 runner. The network identity and a fresh constructor quote were reconfirmed before opening the owner setup. Run `node scripts/check-bradbury.mjs` again if the network identity or fee conditions change.
+2. The owner authorized public GitHub publishing, free Vercel production deployment, and preparation of Bradbury transactions. The owner must personally connect and confirm in the designated wallet.
+3. Vercel Hobby can only see repositories already approved for its GitHub App. GitHub opened a sudo reauthentication window for that existing installation. The owner should privately reauthenticate and add only `versionrelay-genlayer` while preserving existing selections.
 4. Open the dev-only `?setup` view in a browser with the funded owner wallet. Deploy and finalize the registry and evaluator, bind and finalize the binding, then check finalized registry configuration. Inspect each transaction's execution result.
 5. Submit the three fixture commits. Finalize as required. For approval, verify the separate child receipt and matching finalized registry state. Populate `src/deployment.json` with the verified addresses and receipt hashes, then update the public evidence documents.
 6. Build and deploy on the authorized Vercel Hobby project. Verify production is public and serving the intended commit, repeat reviewer steps, and confirm live links. The owner confirms portal taxonomy and submits.

@@ -37,6 +37,8 @@ Python unit tests use a small local SDK stub to exercise logic. JavaScript tests
 
 ## Deployment
 
+The [public GitHub repository](https://github.com/alaminvyn/versionrelay-genlayer) contains all three immutable evidence commits.
+
 Network configuration targets Bradbury Phase 2, chain 4221, at `https://rpc-bradbury.genlayer.com`. Before any write, the app checks the wallet and RPC genesis and the documented AddressManager. Run `node scripts/check-bradbury.mjs` to verify the Phase 2 genesis, SDK fee quote, and unsigned execution of both constructors. The contracts pin the GenVM v0.3 Python runner recovered from a finalized Phase 2 reference deployment. Deployment uses the dev-only `?setup` view and the owner wallet. Deploy and finalize registry and evaluator, bind once, and confirm the finalized configuration before evaluations. Fee limits require calibration against a successful Bradbury smoke test.
 
 See [Reviewer Guide](REVIEWER_GUIDE.md) and [verification evidence](submission-assets/VERIFICATION_EVIDENCE.md) for the release status. Only add live addresses and hashes to `src/deployment.json` after verifying them. The checked-in Vercel configuration builds and serves the Vite production output.

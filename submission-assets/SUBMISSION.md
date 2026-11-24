@@ -18,7 +18,7 @@ The approved adapter reads resources.core and produces a finalized registry acti
 
 ## Website, repository, and onchain links
 
-Pending verified publication. See [verification evidence](VERIFICATION_EVIDENCE.md).
+[Public GitHub repository](https://github.com/alaminvyn/versionrelay-genlayer). The production URL and onchain receipts are pending. See [verification evidence](VERIFICATION_EVIDENCE.md).
 
 ## Tags
 
